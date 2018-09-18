@@ -4,11 +4,12 @@ namespace ZfGearmanManager;
 
 use GearmanManager\Bridge\GearmanPeclManager;
 use GearmanWorker;
+use Psr\Container\ContainerInterface;
 use Zend\ServiceManager\ServiceLocatorAwareInterface;
 use Zend\ServiceManager\ServiceLocatorInterface;
 use ZfGearmanManager\Worker\WorkerInterface;
 
-class ZfGearmanPeclManager extends GearmanPeclManager implements ServiceLocatorAwareInterface
+class ZfGearmanPeclManager extends GearmanPeclManager
 {
     /**
      * Service Locator
@@ -25,8 +26,10 @@ class ZfGearmanPeclManager extends GearmanPeclManager implements ServiceLocatorA
      * the instance (i.e. in the service locator) before it starts
      * doing it's stuff
      */
-    public function __construct()
+    public function __construct(ServiceLocatorInterface $serviceLocator)
     {
+        $this->sm = $serviceLocator;
+
         if(!function_exists("posix_kill")){
             $this->show_help("The function posix_kill was not found. Please ensure POSIX functions are installed");
         }

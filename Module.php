@@ -3,42 +3,17 @@
 namespace ZfGearmanManager;
 
 use GearmanClient;
+use Zend\ModuleManager\Feature\ConfigProviderInterface;
 
-class Module
+class Module implements ConfigProviderInterface
 {
-    public function getAutoloaderConfig()
-    {
-        return array(
-            'Zend\Loader\StandardAutoloader' => array(
-                'namespaces' => array(
-                    __NAMESPACE__ => __DIR__ . '/src/' . __NAMESPACE__,
-                ),
-            ),
-        );
-    }
-
-    public function getServiceConfig()
-    {
-        return array(
-            'factories' => array(
-                'GearmanClient' => function ($sm) {
-                    $gmClient = new GearmanClient();
-                    $config = $sm->get('Config');
-                    if(isset($config['gearman_client'])){
-                        $conf = $config['gearman_client'];
-                    }
-                    $host = isset($conf['host']) ? $conf['host'] : '127.0.0.1';
-                    $port = isset($conf['port']) ? $conf['port'] : 4730;
-
-                    // add default server (localhost)
-                    $gmClient->addServer($host, $port);
-
-                    return $gmClient;
-                },
-            ),
-            'invokables' => array(
-                'ZfGearmanPeclManager' => 'ZfGearmanManager\ZfGearmanPeclManager',
-            ),
-        );
+    /**
+     * Get module configuration.
+     *
+     * @return array
+     */
+    public function getConfig() {
+        // for performance assume configfile exists.
+        return include __DIR__ . '/config/module.config.php';
     }
 }
