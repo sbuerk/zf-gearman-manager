@@ -274,6 +274,9 @@ class ZfGearmanPeclManager extends GearmanPeclManager
         if ($fqcn) {
             $this->log("Creating a $func object", self::LOG_LEVEL_WORKER_INFO);
             $objects[$job_name] = $this->getServiceLocator()->get($fqcn);
+            if (method_exists($objects[$job_name], 'setServiceLocator')) {
+                $objects[$job_name]->setServiceLocator($this->getServiceLocator());
+            }
 
             if (!$objects[$job_name] || !is_object($objects[$job_name])) {
                 $this->log("Invalid worker class registered for $job_name (not an object?)");
