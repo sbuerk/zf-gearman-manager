@@ -10,12 +10,9 @@
     }],
 
     "autoload": {
-        "psr-0": {
-            "ZfGearmanManager": "src/"
-        },
-        "classmap": [
-            "./Module.php"
-        ]
+        "psr-4": {
+            "ZfGearmanManager\\": "src/"
+        }
     },
 
     "repositories": [

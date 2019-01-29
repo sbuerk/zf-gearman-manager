@@ -4,31 +4,27 @@ namespace ZfGearmanManager;
 
 use GearmanManager\Bridge\GearmanPeclManager;
 use GearmanWorker;
-use Psr\Container\ContainerInterface;
-use Zend\ServiceManager\ServiceLocatorAwareInterface;
-use Zend\ServiceManager\ServiceLocatorInterface;
+use Interop\Container\ContainerInterface;
 use ZfGearmanManager\Worker\WorkerInterface;
 
 class ZfGearmanPeclManager extends GearmanPeclManager
 {
     /**
-     * Service Locator
-     *
-     * @var ServiceLocatorInterface
+     * @var ContainerInterface
      */
-    protected $sm;
+    protected $_container;
 
     /**
      * Overrides GearmanManager's constructor to remove all of the
      * 'start up' functionality (which is now in the start() method)
      *
      * This is mainly to allow other depdendencies to be passed to
-     * the instance (i.e. in the service locator) before it starts
+     * the instance (i.e. in the ContainerInterface) before it starts
      * doing it's stuff
      */
-    public function __construct(ServiceLocatorInterface $serviceLocator)
+    public function __construct(ContainerInterface $container)
     {
-        $this->sm = $serviceLocator;
+        $this->_container = $container;
 
         if(!function_exists("posix_kill")){
             $this->show_help("The function posix_kill was not found. Please ensure POSIX functions are installed");
@@ -80,15 +76,17 @@ class ZfGearmanPeclManager extends GearmanPeclManager
 
         $this->log("Exiting");
     }
-
+    
     /**
      * Set service locator
      *
-     * @param ServiceLocatorInterface $serviceLocator
+     * @param ContainerInterface $container
+     *
+     * @return \ZfGearmanManager\ZfGearmanPeclManager
      */
-    public function setServiceLocator(ServiceLocatorInterface $serviceLocator)
+    public function setServiceLocator(ContainerInterface $container)
     {
-        $this->sm = $serviceLocator;
+        $this->_container = $container;
 
         return $this;
     }
@@ -96,12 +94,14 @@ class ZfGearmanPeclManager extends GearmanPeclManager
     /**
      * Get service locator
      *
-     * @return ServiceLocatorInterface
+     * @return ContainerInterface
      */
     public function getServiceLocator()
     {
-        return $this->sm;
+        return $this->_container;
     }
+    
+    
 
     /**
      * Helper function to load and filter worker files
@@ -110,7 +110,7 @@ class ZfGearmanPeclManager extends GearmanPeclManager
      */
     protected function load_workers()
     {
-        $config = $this->getServiceLocator()->get('Config');
+        $config = $this->getServiceLocator()->get('config');
         if (!isset($config['gearman_workers']) || empty($config['gearman_workers'])) {
             return;
         }
