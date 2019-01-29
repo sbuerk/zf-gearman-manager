@@ -14,6 +14,6 @@ class Module implements ConfigProviderInterface
      */
     public function getConfig() {
         // for performance assume configfile exists.
-        return include __DIR__ . '/config/module.config.php';
+        return include __DIR__ . '/../config/module.config.php';
     }
 }
